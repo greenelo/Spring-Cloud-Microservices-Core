@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: core-eureka
+
+server:
+  port: 8761
+  
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+  server:
+    waitTimeInMsWhenSyncEmpty: 0
+    

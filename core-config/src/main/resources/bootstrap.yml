@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: core-config
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/modules
+  profiles:
+     active: native
+  security:
+    user:
+      password: ${CONFIG_SERVICE_PASSWORD}
+
+server:
+  port: 9001

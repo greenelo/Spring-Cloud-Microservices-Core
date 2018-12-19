@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: core-hystrix
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: core-config
+      fail-fast: true
+      password: ${CONFIG_SERVICE_PASSWORD}
+      username: user
