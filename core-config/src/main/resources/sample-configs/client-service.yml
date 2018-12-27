@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      uri: ${CLIENT_SERIVCE_DB_URI}
+
+server:
+  servlet:
+    context-path: /clients
+  port: 7000

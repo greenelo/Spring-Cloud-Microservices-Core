@@ -1,16 +1,19 @@
 spring:
   application:
     name: core-config
-  cloud:
-    config:
-      server:
-        native:
-          search-locations: classpath:/modules
+#  cloud:
+#    config:
+#      server:
+#        native:
+#          search-locations: classpath:/modules
   profiles:
      active: native
   security:
     user:
       password: ${CONFIG_SERVICE_PASSWORD}
+  data:
+    mongodb:
+      uri: ${CONFIG_SERVICE_DB_URI}
 
 server:
   port: 9001
