@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      uri: ${CORE_AUTH_DB_URI}
+      
+server:
+  servlet:
+    context-path: /auth
+  port: 9003

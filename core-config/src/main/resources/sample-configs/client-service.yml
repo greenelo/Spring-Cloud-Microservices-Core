@@ -3,6 +3,11 @@ spring:
     mongodb:
       uri: ${CLIENT_SERIVCE_DB_URI}
 
+security:
+  oauth2:
+    resource:
+      userInfoUri: http://localhost:9000/auth/users/current
+
 server:
   servlet:
     context-path: /clients
