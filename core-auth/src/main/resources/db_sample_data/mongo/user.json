@@ -1,0 +1,10 @@
+﻿{
+  "_id" : ObjectId("5c2cef0b525eef21e05f5dc6"),
+  "username" : "test123",
+  "password" : "$2a$10$DW8F.GEUdf5YS/o5Dmke3.JuzomnPg8.iZ/B4BS8vFOSllqpE9VBu",
+  "roles" : ["ROLE_USER"],
+  "expired" : false,
+  "locked" : false,
+  "passwordExpired" : false,
+  "enabled" : true
+}

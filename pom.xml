@@ -42,9 +42,11 @@
 	</repositories>
 	
 	<modules>
+		<module>core-common</module>
 		<module>core-mongo</module>
 		<module>core-config</module>
 		<module>core-hystrix</module>
+		<module>core-turbine-stream</module>
 		<module>core-eureka</module>
 		<module>core-mongo</module>
 		<module>core-gateway</module>

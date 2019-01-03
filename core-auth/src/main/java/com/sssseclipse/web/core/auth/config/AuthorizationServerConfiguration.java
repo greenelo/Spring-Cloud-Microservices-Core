@@ -3,7 +3,6 @@ package com.sssseclipse.web.core.auth.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +24,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	private TokenStore tokenStore;
 
 	@Autowired
-//	@Qualifier("oauthAccessTokenConverter")
 	private AccessTokenConverter accessTokenConverter;
 
 	@Autowired
@@ -43,8 +41,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	@Autowired
-	private Environment env;
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {

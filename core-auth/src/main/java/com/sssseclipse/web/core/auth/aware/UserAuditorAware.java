@@ -5,9 +5,9 @@ import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
-import com.sssseclipse.web.core.auth.entity.User;
 
 @Component
 public class UserAuditorAware implements AuditorAware<String> {
@@ -19,8 +19,16 @@ public class UserAuditorAware implements AuditorAware<String> {
 		if (authentication == null || !authentication.isAuthenticated()) {
 			return null;
 		}
+		
+		if (authentication.getPrincipal() != null) {
+			if (authentication.getPrincipal() instanceof User) {
+				return Optional.of(((User) authentication.getPrincipal()).getUsername());
+			}else if (authentication.getPrincipal() instanceof String) {
+				return Optional.of((String) authentication.getPrincipal());
+			}
+		}
 
-		return Optional.of(((User) authentication.getPrincipal()).getUsername());
+		return null;
 	}
 
 }

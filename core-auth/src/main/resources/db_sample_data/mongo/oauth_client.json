@@ -1,0 +1,23 @@
+﻿{
+  "_id" : "frontend",
+  "accessTokenValiditySeconds" : 86400,
+  "refreshTokenValiditySeconds" : 86400,
+  "authorizedGrantTypes" : ["password", "refresh_token"],
+  "scope" : ["app"],
+  "resource" : [{
+      "$ref" : "resource",
+      "$id" : "frontend"
+    }]
+}
+{
+  "_id" : "client-service",
+  "clientSecret" : "$2a$10$bq5e2cJs5LpLAJ3MdIYG2OmPxkDWks0zDjifGDnU9MosnbgQgjdcm",
+  "accessTokenValiditySeconds" : 86400,
+  "refreshTokenValiditySeconds" : 86400,
+  "authorizedGrantTypes" : ["client_credentials", "refresh_token"],
+  "scope" : ["service"],
+  "resource" : [{
+      "$ref" : "resource",
+      "$id" : "client-service"
+    }]
+}

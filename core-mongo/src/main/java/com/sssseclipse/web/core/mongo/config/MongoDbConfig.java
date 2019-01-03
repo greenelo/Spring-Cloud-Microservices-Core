@@ -1,14 +1,15 @@
 package com.sssseclipse.web.core.mongo.config;
 
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.convert.ReadingConverter;
+import org.springframework.data.convert.WritingConverter;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 
@@ -18,19 +19,19 @@ public class MongoDbConfig {
 
 	@Bean
 	public MongoCustomConversions customConversions() {
-		List<Converter<?, ?>> converters = new ArrayList<>();
-		converters.add(new DateToZonedDateTimeConverter());
-		converters.add(new ZonedDateTimeToDateConverter());
-		return new MongoCustomConversions(converters);
+        return new MongoCustomConversions(Arrays.asList(
+                new DateToZonedDateTimeConverter(), new ZonedDateTimeToDateConverter()));
 	}
-
+	
+	@ReadingConverter
 	class DateToZonedDateTimeConverter implements Converter<Date, ZonedDateTime> {
 		@Override
-		public ZonedDateTime convert(Date date) {
-			return date == null ? null : date.toInstant().atZone(ZoneOffset.systemDefault());
+		public ZonedDateTime convert(Date source) {
+			return source == null ? null : ZonedDateTime.ofInstant(source.toInstant(), ZoneId.systemDefault());
 		}
 	}
-
+	
+	@WritingConverter
 	class ZonedDateTimeToDateConverter implements Converter<ZonedDateTime, Date> {
 		@Override
 		public Date convert(ZonedDateTime source) {

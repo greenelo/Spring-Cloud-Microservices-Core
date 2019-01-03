@@ -1,0 +1,8 @@
+﻿{
+  "_id" : "frontend",
+  "label" : "app or ui"
+}
+{
+  "_id" : "client-service",
+  "label" : "client service"
+}

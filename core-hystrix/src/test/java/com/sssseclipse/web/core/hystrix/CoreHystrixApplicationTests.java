@@ -1,4 +1,4 @@
-package com.sssseclipse.web.core.corehystrix;
+package com.sssseclipse.web.core.hystrix;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
