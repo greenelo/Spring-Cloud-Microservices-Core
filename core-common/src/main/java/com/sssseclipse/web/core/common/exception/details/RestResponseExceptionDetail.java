@@ -1,4 +1,4 @@
-package com.sssseclipse.web.core.common.exception.handler;
+package com.sssseclipse.web.core.common.exception.details;
 
 import java.time.OffsetDateTime;
 
@@ -11,11 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RestResponseExceptionDetails {
+public class RestResponseExceptionDetail {
 
 	private OffsetDateTime timestamp;
 	private Integer status;
 	private String error;
 	private String message;
 	private String path;
+
 }

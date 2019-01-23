@@ -10,8 +10,6 @@ import java.util.Set;
 
 import org.springframework.boot.autoconfigure.security.oauth2.resource.AuthoritiesExtractor;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedAuthoritiesExtractor;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedPrincipalExtractor;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,17 +22,13 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
-import org.springframework.util.Assert;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * This is an enhanced version of UserInfoTokenServices with scope support, basically it is almost same as UserInfoTokenServices
- * @author Eddie Lo
- *
- */
 @Slf4j
-public class CustomResourceServerTokenServices implements ResourceServerTokenServices {
+public class CustomUserInfoTokenServices implements ResourceServerTokenServices {
+
+	private static final String[] PRINCIPAL_KEYS = new String[] { "user", "username", "userid", "user_id", "login", "id", "name" };
 
 	private final String userInfoEndpointUrl;
 
@@ -46,9 +40,7 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
 
 	private AuthoritiesExtractor authoritiesExtractor = new FixedAuthoritiesExtractor();
 
-	private PrincipalExtractor principalExtractor = new FixedPrincipalExtractor();
-
-	public CustomResourceServerTokenServices(String userInfoEndpointUrl, String clientId) {
+	public CustomUserInfoTokenServices(String userInfoEndpointUrl, String clientId) {
 		this.userInfoEndpointUrl = userInfoEndpointUrl;
 		this.clientId = clientId;
 	}
@@ -62,22 +54,14 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
 	}
 
 	public void setAuthoritiesExtractor(AuthoritiesExtractor authoritiesExtractor) {
-		Assert.notNull(authoritiesExtractor, "AuthoritiesExtractor must not be null");
 		this.authoritiesExtractor = authoritiesExtractor;
-	}
-	
-	public void setPrincipalExtractor(PrincipalExtractor principalExtractor) {
-		Assert.notNull(principalExtractor, "PrincipalExtractor must not be null");
-		this.principalExtractor = principalExtractor;
 	}
 
 	@Override
 	public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
 		Map<String, Object> map = getMap(this.userInfoEndpointUrl, accessToken);
 		if (map.containsKey("error")) {
-			if (log.isDebugEnabled()) {
-				log.debug("userinfo returned error: " + map.get("error"));
-			}
+			log.debug("userinfo returned error: " + map.get("error"));
 			throw new InvalidTokenException(accessToken);
 		}
 		return extractAuthentication(map);
@@ -85,13 +69,20 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
 
 	private OAuth2Authentication extractAuthentication(Map<String, Object> map) {
 		Object principal = getPrincipal(map);
-		List<GrantedAuthority> authorities = this.authoritiesExtractor
-				.extractAuthorities(map);
 		OAuth2Request request = getRequest(map);
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-				principal, "N/A", authorities);
+		List<GrantedAuthority> authorities = this.authoritiesExtractor.extractAuthorities(map);
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(principal, "N/A", authorities);
 		token.setDetails(map);
 		return new OAuth2Authentication(request, token);
+	}
+
+	private Object getPrincipal(Map<String, Object> map) {
+		for (String key : PRINCIPAL_KEYS) {
+			if (map.containsKey(key)) {
+				return map.get(key);
+			}
+		}
+		return "unknown";
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -104,17 +95,6 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
 		return new OAuth2Request(null, clientId, null, true, new HashSet<>(scope), null, null, null, null);
 	}
 
-	/**
-	 * Return the principal that should be used for the token. The default implementation
-	 * delegates to the {@link PrincipalExtractor}.
-	 * @param map the source map
-	 * @return the principal or {@literal "unknown"}
-	 */
-	protected Object getPrincipal(Map<String, Object> map) {
-		Object principal = this.principalExtractor.extractPrincipal(map);
-		return (principal == null ? "unknown" : principal);
-	}
-
 	@Override
 	public OAuth2AccessToken readAccessToken(String accessToken) {
 		throw new UnsupportedOperationException("Not supported: read access token");
@@ -122,9 +102,7 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
 
 	@SuppressWarnings({ "unchecked" })
 	private Map<String, Object> getMap(String path, String accessToken) {
-		if (log.isDebugEnabled()) {
-			log.debug("Getting user info from: " + path);
-		}
+		log.debug("Getting user info from: " + path);
 		try {
 			OAuth2RestOperations restTemplate = this.restTemplate;
 			if (restTemplate == null) {
@@ -132,21 +110,16 @@ public class CustomResourceServerTokenServices implements ResourceServerTokenSer
 				resource.setClientId(this.clientId);
 				restTemplate = new OAuth2RestTemplate(resource);
 			}
-			OAuth2AccessToken existingToken = restTemplate.getOAuth2ClientContext()
-					.getAccessToken();
+			OAuth2AccessToken existingToken = restTemplate.getOAuth2ClientContext().getAccessToken();
 			if (existingToken == null || !accessToken.equals(existingToken.getValue())) {
-				DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(
-						accessToken);
+				DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(accessToken);
 				token.setTokenType(this.tokenType);
 				restTemplate.getOAuth2ClientContext().setAccessToken(token);
 			}
 			return restTemplate.getForEntity(path, Map.class).getBody();
-		} 
-		catch (Exception ex) {
-			log.warn("Could not fetch user details: " + ex.getClass() + ", "
-					+ ex.getMessage());
-			return Collections.<String, Object>singletonMap("error",
-					"Could not fetch user details");
+		} catch (Exception ex) {
+			log.info("Could not fetch user details: " + ex.getClass() + ", " + ex.getMessage());
+			return Collections.<String, Object> singletonMap("error", "Could not fetch user details");
 		}
 	}
 }

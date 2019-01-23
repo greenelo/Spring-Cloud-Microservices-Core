@@ -38,8 +38,11 @@ public class OauthTokenStore implements TokenStore {
 	public OAuth2Authentication readAuthentication(String tokenValue) {
 		log.info("--> OauthTokenStore.readAuthentication tokenValue={}", tokenValue);
 		
-		OauthToken oauthToken = oauthTokenRepository.findByTokenId(oauthTokenStoreSupporter.generateIdFromString(tokenValue));
+		String tokenId = oauthTokenStoreSupporter.generateIdFromString(tokenValue);
+		OauthToken oauthToken = oauthTokenRepository.findByTokenId(tokenId);
 
+		log.info("--- retrieved oauthToken={} with tokenId={}", oauthToken, tokenId);
+		
 		OAuth2Authentication authentication = null;
 		if(oauthToken != null) {
 			authentication = oauthTokenStoreSupporter.deserialize(oauthToken.getAuthenticationContent(), OAuth2Authentication.class);

@@ -1,17 +1,20 @@
 package com.sssseclipse.web.core.common.exception;
 
+import org.springframework.http.HttpStatus;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class DuplicateFieldException extends RuntimeException {
+public class DuplicateFieldException extends GenericException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -843491065867530469L;
-	
+
+	protected HttpStatus status = HttpStatus.BAD_REQUEST;
 	private String field;
 	
 	public DuplicateFieldException() {
